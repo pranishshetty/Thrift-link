@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Thrift-Link</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="login-page">
+        <!-- The background image path refers to the AI generated image. Fallback to a solid color or gradient if not available. -->
+        <div class="login-bg"></div>
+        
+        <div class="login-card">
+            <h1 class="header-logo login-logo">Thrift-Link</h1>
+            <p class="login-subtitle">Welcome back to the sustainable fashion hub.</p>
+            
+            <div class="role-toggle">
+                <button class="role-btn active" id="roleCustomer" onclick="selectRole('customer')">Customer</button>
+                <button class="role-btn" id="roleStaff" onclick="selectRole('staff')">Staff</button>
+            </div>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group" style="text-align: left; margin-bottom: 16px;">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary login-btn">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'customer';
+
+        function selectRole(role) {
+            currentRole = role;
+            document.getElementById('roleCustomer').classList.remove('active');
+            document.getElementById('roleStaff').classList.remove('active');
+            
+            if (role === 'customer') {
+                document.getElementById('roleCustomer').classList.add('active');
+            } else {
+                document.getElementById('roleStaff').classList.add('active');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            if (currentRole === 'customer') {
+                window.location.href = 'index.html';
+            } else {
+                window.location.href = 'admin.html';
+            }
+        }
+    </script>
+</body>
+</html>

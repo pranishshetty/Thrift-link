@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Thrift-Link</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">Thrift-Link</div>
+            <ul class="admin-nav">
+                <li><a href="#" class="active">Inventory</a></li>
+                <li><a href="#">Active Reservations</a></li>
+                <li><a href="#">Sales Analytics</a></li>
+                <li><a href="#">Settings</a></li>
+                <li style="margin-top: 40px;"><a href="login.html" style="color: rgba(255,255,255,0.5);">Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1>Inventory Management</h1>
+                <p style="color: #777; margin-top: 8px;">Manage your unique boutique items</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Quick Add Form -->
+                <div class="admin-card quick-add-form">
+                    <h2 class="admin-card-title">Quick Add</h2>
+                    <form onsubmit="event.preventDefault();">
+                        <div class="form-group">
+                            <label for="itemName">Item Name</label>
+                            <input type="text" id="itemName" class="form-control" placeholder="e.g. Vintage Denim Jacket" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemPrice">Price ($)</label>
+                            <input type="number" id="itemPrice" class="form-control" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemCategory">Category</label>
+                            <select id="itemCategory" class="form-control" required>
+                                <option value="" disabled selected>Select category</option>
+                                <option value="vintage">Vintage</option>
+                                <option value="ethnic">Ethnic</option>
+                                <option value="boho">Boho Chic</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="itemImage">Image</label>
+                            <input type="file" id="itemImage" class="form-control" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; margin-top: 16px;">Add Item</button>
+                    </form>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="admin-card">
+                    <h2 class="admin-card-title">Current Inventory</h2>
+                    <div style="overflow-x: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Item ID</th>
+                                    <th>Item Name</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Mark as Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-family: monospace;">#TL-092</td>
+                                    <td style="font-weight: 500;">Classic Corduroy Jacket</td>
+                                    <td>Vintage</td>
+                                    <td><span class="status-badge status-available">Available</span></td>
+                                    <td>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace;">#TL-093</td>
+                                    <td style="font-weight: 500;">Floral Summer Dress</td>
+                                    <td>Boho Chic</td>
+                                    <td><span class="status-badge status-reserved">Reserved</span></td>
+                                    <td>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-family: monospace;">#TL-094</td>
+                                    <td style="font-weight: 500;">Timeless Leather Bag</td>
+                                    <td>Accessories</td>
+                                    <td><span class="status-badge status-sold">Sold</span></td>
+                                    <td>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
