@@ -87,6 +87,21 @@ const Home = () => {
 
   const cartTotal = cart.reduce((total, item) => total + (item.purchaseType === 'buy' ? parseFloat(item.price) : parseFloat(item.rental_price)), 0);
 
+  const processCheckout = async () => {
+    try {
+      for (const item of cart) {
+        await axios.put(`${API_URL}/inventory/${item.id}`, { status: 'Sold' });
+      }
+      setCart([]);
+      setIsCartOpen(false);
+      alert('Success! Your items have been securely checked out and your order is processing.');
+      axios.get(`${API_URL}/inventory`).then(res => setItems(res.data)).catch(console.error);
+    } catch (error) {
+      console.error(error);
+      alert('Error connecting to the database during checkout.');
+    }
+  };
+
   return (
     <>
       <header className="header">
@@ -132,7 +147,7 @@ const Home = () => {
                   <span>Total</span>
                   <span>${cartTotal.toFixed(2)}</span>
                </div>
-               <button type="button" className="btn-emerald" style={{width: '100%', padding: '16px', fontSize: '1.1rem'}} onClick={() => alert('Proceeding to checkout sequence...')}>Proceed to Checkout</button>
+               <button type="button" className="btn-emerald" style={{width: '100%', padding: '16px', fontSize: '1.1rem'}} onClick={processCheckout}>Proceed to Checkout</button>
             </div>
           )}
         </div>
@@ -399,11 +414,22 @@ const Login = () => {
   const navigate = useNavigate();
   const [role, setRole] = useState('customer');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleAuth = (e: any) => {
+  const handleAuth = async (e: any) => {
     e.preventDefault();
-    if (role === 'customer') navigate('/');
-    else navigate('/admin');
+    try {
+        const payload = { email, password, action: isSignUp ? 'signup' : 'login', role };
+        const res = await axios.post(`${API_URL}/auth`, payload);
+        if (res.data.success) {
+            alert(isSignUp ? "Account fully authorized & uniquely created in database!" : "Logged into database successfully!");
+            if (role === 'customer') navigate('/');
+            else navigate('/admin');
+        }
+    } catch (err: any) {
+        alert(err.response?.data?.error || 'Authentication error from MySQL server.');
+    }
   };
 
   return (
@@ -413,25 +439,19 @@ const Login = () => {
             <h1 className="header-logo login-logo">Thrift-Link</h1>
             <p className="login-subtitle">Welcome back to the sustainable fashion hub.</p>
             <div className="role-toggle">
-                <button type="button" className={`role-btn ${role === 'customer' ? 'active' : ''}`} onClick={() => setRole('customer')}>Customer</button>
-                <button type="button" className={`role-btn ${role === 'staff' ? 'active' : ''}`} onClick={() => setRole('staff')}>Staff</button>
+                <button type="button" className={`role-btn ${role === 'customer' ? 'active' : ''}`} onClick={() => { setRole('customer'); setIsSignUp(false); }}>Customer</button>
+                <button type="button" className={`role-btn ${role === 'staff' ? 'active' : ''}`} onClick={() => { setRole('staff'); setIsSignUp(false); }}>Staff</button>
             </div>
             <form onSubmit={handleAuth}>
-                {isSignUp && (
-                  <div className="form-group" style={{textAlign: 'left', marginBottom: '16px'}}>
-                      <label>Email Address</label>
-                      <input type="email" className="form-control" placeholder="hello@example.com" required />
-                  </div>
-                )}
                 <div className="form-group" style={{textAlign: 'left', marginBottom: '16px'}}>
-                    <label>Username</label>
-                    <input type="text" className="form-control" placeholder="Enter your username" required />
+                    <label>Email Address / Username</label>
+                    <input type="text" className="form-control" placeholder="hello@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
                 </div>
                 <div className="form-group" style={{textAlign: 'left', marginBottom: '24px'}}>
                     <label>Password</label>
-                    <input type="password" className="form-control" placeholder="••••••••" required />
+                    <input type="password" className="form-control" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
                 </div>
-                <button type="submit" className="btn-primary login-btn">{isSignUp ? 'Create Account' : 'Sign In'}</button>
+                <button type="submit" className="btn-primary login-btn">{isSignUp ? 'Record Account in DB' : 'Verify & Sign In'}</button>
             </form>
             {role === 'customer' && (
               <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#777'}}>

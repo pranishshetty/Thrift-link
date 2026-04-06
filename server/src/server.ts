@@ -52,6 +52,32 @@ app.put('/api/inventory/:id', async (req, res) => {
   }
 });
 
+app.post('/api/auth', async (req, res) => {
+  const { email, password, action, role } = req.body;
+  try {
+    if (action === 'login') {
+      const [rows]: any = await pool.query('SELECT * FROM users WHERE email = ? AND password = ? AND role = ?', [email, password, role]);
+      if (rows.length > 0) res.json({ success: true });
+      else res.status(401).json({ error: 'Invalid credentials' });
+    } else if (action === 'signup') {
+      await pool.query('INSERT INTO users (email, password, role) VALUES (?, ?, ?)', [email, password, role]);
+      res.json({ success: true });
+    }
+  } catch (err: any) {
+    if (err.code === 'ER_NO_SUCH_TABLE') {
+      await pool.query('CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, email VARCHAR(255) UNIQUE, password VARCHAR(255), role VARCHAR(50))');
+      if (action === 'signup') {
+        await pool.query('INSERT INTO users (email, password, role) VALUES (?, ?, ?)', [email, password, role]);
+        res.json({ success: true });
+      } else {
+        res.status(401).json({ error: 'Database just initialized. No users exist yet! Please Sign Up.' });
+      }
+    } else {
+      res.status(500).json({ error: err.message });
+    }
+  }
+});
+
 app.listen(port, () => {
   console.log(`Backend Server running at http://localhost:${port}`);
   console.log('Remember to configure your MySQL connection in server/.env');
