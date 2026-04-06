@@ -5,16 +5,17 @@ import './index.css';
 
 const API_URL = 'http://localhost:5000/api';
 
-const getImageForItem = (id: number, name: string, category: string, section: string) => {
+const getImageForItem = (id: any, name: string, category: string, section: string) => {
   const n = name.toLowerCase();
-  const pick = (arr: string[]) => arr[(id || 0) % arr.length];
+  const numId = typeof id === 'number' ? id : parseInt(String(id).replace(/\D/g, ''), 10) || 0;
+  const pick = (arr: string[]) => arr[numId % arr.length];
   
   if (n.includes('dress') || n.includes('floral') || n.includes('maxi') || n.includes('bohemian') || n.includes('skirt')) {
     return pick([
       'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
-      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
-      'https://images.unsplash.com/photo-1612336307429-8a898d10e223?w=800&q=80',
-      'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80'
+      'https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&q=80', 
+      'https://images.unsplash.com/photo-1515347619252-78d91c530e12?w=800&q=80',
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80'
     ]);
   }
 
@@ -23,18 +24,11 @@ const getImageForItem = (id: number, name: string, category: string, section: st
     return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80';
   }
   
-  if (n.includes('denim') || n.includes('jacket') || n.includes('coat')) {
+  if (n.includes('denim') || n.includes('jacket') || n.includes('coat') || n.includes('corduroy')) {
     if (section === 'womens') {
-       return pick([
-          'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80',
-          'https://images.unsplash.com/photo-1534030612642-1a4b8df2fbb9?w=800&q=80' 
-       ]);
+       return pick(['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80', 'https://images.unsplash.com/photo-1534030612642-1a4b8df2fbb9?w=800&q=80']);
     }
-    return pick([
-      'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=800&q=80',
-      'https://images.unsplash.com/photo-1520975954732-57dd22299614?w=800&q=80',
-      'https://images.unsplash.com/photo-1621335829175-95f437384d7c?w=800&q=80'
-    ]);
+    return pick(['https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=800&q=80', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80']);
   }
 
   if (n.includes('boots') || n.includes('shoes')) return 'https://images.unsplash.com/photo-1608256246200-53e635b5e65f?w=800&q=80';
@@ -43,15 +37,13 @@ const getImageForItem = (id: number, name: string, category: string, section: st
   
   if (section === 'womens') {
     return pick([
-      'https://images.unsplash.com/photo-1515347619252-78d91c530e12?w=800&q=80',
-      'https://images.unsplash.com/photo-1434389678369-e840152817d5?w=800&q=80',
-      'https://images.unsplash.com/photo-1550614000-4b95d4edae1f?w=800&q=80'
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
+      'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=800&q=80'
     ]);
   }
 
   return pick([
     'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=800&q=80',
-    'https://images.unsplash.com/photo-1489987707023-af823c576fcea?w=800&q=80',
     'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'
   ]);
 };
@@ -453,14 +445,12 @@ const Login = () => {
                 </div>
                 <button type="submit" className="btn-primary login-btn">{isSignUp ? 'Record Account in DB' : 'Verify & Sign In'}</button>
             </form>
-            {role === 'customer' && (
-              <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#777'}}>
-                  {isSignUp ? "Already have an account? " : "Don't have an account? "}
-                  <a href="#" style={{color: 'var(--olive-green)', fontWeight: 600}} onClick={(e) => { e.preventDefault(); setIsSignUp(!isSignUp); }}>
-                      {isSignUp ? 'Sign In' : 'Sign Up'}
-                  </a>
-              </p>
-            )}
+            <p style={{marginTop: '20px', fontSize: '0.9rem', color: '#777'}}>
+                {isSignUp ? "Already have an account? " : "Don't have an account? "}
+                <a href="#" style={{color: 'var(--olive-green)', fontWeight: 600}} onClick={(e) => { e.preventDefault(); setIsSignUp(!isSignUp); }}>
+                    {isSignUp ? 'Sign In' : 'Sign Up'}
+                </a>
+            </p>
         </div>
     </div>
   );
