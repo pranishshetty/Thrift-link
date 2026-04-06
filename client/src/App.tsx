@@ -5,22 +5,55 @@ import './index.css';
 
 const API_URL = 'http://localhost:5000/api';
 
-const getImageForItem = (name: string, category: string) => {
+const getImageForItem = (id: number, name: string, category: string, section: string) => {
   const n = name.toLowerCase();
+  const pick = (arr: string[]) => arr[(id || 0) % arr.length];
   
-  if (n.includes('dress') || n.includes('floral')) return 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80';
-  if (n.includes('denim') && n.includes('jacket')) return 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=800&q=80';
-  if (n.includes('jacket') || n.includes('coat')) return 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80';
-  if (n.includes('bag') || n.includes('purse')) return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80';
+  if (n.includes('dress') || n.includes('floral') || n.includes('maxi') || n.includes('bohemian') || n.includes('skirt')) {
+    return pick([
+      'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&q=80',
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
+      'https://images.unsplash.com/photo-1612336307429-8a898d10e223?w=800&q=80',
+      'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80'
+    ]);
+  }
+
+  if (n.includes('bag') || n.includes('purse') || n.includes('backpack')) {
+    if (section === 'mens') return 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80';
+    return 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80';
+  }
+  
+  if (n.includes('denim') || n.includes('jacket') || n.includes('coat')) {
+    if (section === 'womens') {
+       return pick([
+          'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80',
+          'https://images.unsplash.com/photo-1534030612642-1a4b8df2fbb9?w=800&q=80' 
+       ]);
+    }
+    return pick([
+      'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=800&q=80',
+      'https://images.unsplash.com/photo-1520975954732-57dd22299614?w=800&q=80',
+      'https://images.unsplash.com/photo-1621335829175-95f437384d7c?w=800&q=80'
+    ]);
+  }
+
   if (n.includes('boots') || n.includes('shoes')) return 'https://images.unsplash.com/photo-1608256246200-53e635b5e65f?w=800&q=80';
-  if (n.includes('tee') || n.includes('shirt')) return 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80';
+
   if (n.includes('cardigan') || n.includes('wool') || n.includes('sweater')) return 'https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=800&q=80';
-  if (n.includes('maxi') || n.includes('bohemian')) return 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80';
   
-  if (category.toLowerCase().includes('boho')) return 'https://images.unsplash.com/photo-1515347619252-78d91c530e12?w=800&q=80';
-  if (category.toLowerCase().includes('vintage')) return 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=800&q=80';
-  
-  return 'https://images.unsplash.com/photo-1489987707023-af823c576fcea?w=800&q=80';
+  if (section === 'womens') {
+    return pick([
+      'https://images.unsplash.com/photo-1515347619252-78d91c530e12?w=800&q=80',
+      'https://images.unsplash.com/photo-1434389678369-e840152817d5?w=800&q=80',
+      'https://images.unsplash.com/photo-1550614000-4b95d4edae1f?w=800&q=80'
+    ]);
+  }
+
+  return pick([
+    'https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=800&q=80',
+    'https://images.unsplash.com/photo-1489987707023-af823c576fcea?w=800&q=80',
+    'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'
+  ]);
 };
 
 const Home = () => {
@@ -28,12 +61,16 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('mens');
   const [cart, setCart] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     axios.get(`${API_URL}/inventory`).then(res => setItems(res.data)).catch(console.error);
   }, []);
 
   const displayedItems = items.filter((item: any) => {
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
+
     if (activeTab === 'mens') return item.category.toLowerCase().includes('vintage') || item.category.toLowerCase().includes('accessories') || item.category.toLowerCase().includes('casual');
     if (activeTab === 'womens') return item.category.toLowerCase().includes('boho') || item.category.toLowerCase().includes('ethnic') || item.category.toLowerCase().includes('accessories') || item.category.toLowerCase().includes('vintage') || item.name.toLowerCase().includes('dress') || item.name.toLowerCase().includes('boots');
     return true;
@@ -55,7 +92,7 @@ const Home = () => {
       <header className="header">
           <div className="header-logo">Thrift-Link</div>
           <div className="header-search">
-              <input type="text" placeholder="Search vintage styles..." aria-label="Search" />
+              <input type="text" placeholder="Search vintage styles..." aria-label="Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           <div className="header-actions">
               <button type="button" className="btn-outline" style={{border: 'none', background: '#f5f5dc'}} onClick={() => setIsCartOpen(!isCartOpen)}>
@@ -111,7 +148,7 @@ const Home = () => {
                 <article key={item.id} className="product-card">
                   <div className="product-image-wrap">
                       {item.unique_piece && <span className="badge-unique">Unique Piece</span>}
-                      <img src={getImageForItem(item.name, item.category)} alt={item.name} className="product-image" />
+                      <img src={getImageForItem(item.id, item.name, item.category, activeTab)} alt={item.name} className="product-image" />
                   </div>
                   <div className="product-info">
                       <span className="product-category">{item.category}</span>
@@ -144,6 +181,7 @@ const Admin = () => {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState({ name: '', price: '', category: '' });
   const [activeTab, setActiveTab] = useState('inventory');
+  const [shippedOrders, setShippedOrders] = useState<number[]>([]);
 
   const fetchItems = () => axios.get(`${API_URL}/inventory`).then(res => setItems(res.data)).catch(console.error);
 
@@ -257,31 +295,43 @@ const Admin = () => {
                         <div style={{overflowX: 'auto'}}>
                             <table className="admin-table">
                                 <thead>
-                                    <tr><th>Order ID</th><th>Customer Info</th><th>Order Type</th><th>Total</th><th>Status</th><th>Action</th></tr>
+                                    <tr><th>Order ID</th><th>Customer Info</th><th>Item Purchased</th><th>Total</th><th>Status</th><th>Action</th></tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td style={{fontFamily: 'monospace'}}>#ORD-8821</td>
-                                        <td>
-                                            <strong>Jane Doe</strong><br />
-                                            <span style={{fontSize: '0.8rem', color: '#777'}}>jane@example.com</span>
-                                        </td>
-                                        <td><span style={{fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: '#e8f5e9', color: '#2e7d32', fontWeight: 600}}>Purchase</span></td>
-                                        <td><strong>$45.00</strong></td>
-                                        <td><span className="status-badge" style={{background: '#fff3e0', color: '#ef6c00'}}>Pending Shipment</span></td>
-                                        <td><button type="button" className="btn-emerald" style={{padding: '4px 12px', fontSize: '0.8rem'}}>Mark Shipped</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td style={{fontFamily: 'monospace'}}>#ORD-8822</td>
-                                        <td>
-                                            <strong>Mark Smith</strong><br />
-                                            <span style={{fontSize: '0.8rem', color: '#777'}}>mark.s@example.com</span>
-                                        </td>
-                                        <td><span style={{fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: '#fff3e0', color: '#ef6c00', fontWeight: 600}}>3-Day Rental</span></td>
-                                        <td><strong>$15.00</strong></td>
-                                        <td><span className="status-badge" style={{background: '#e8f5e9', color: '#2e7d32'}}>Active Rental</span></td>
-                                        <td><button type="button" className="btn-outline" style={{padding: '4px 12px', fontSize: '0.8rem'}}>Process Return</button></td>
-                                    </tr>
+                                    {soldItems.length === 0 ? (
+                                        <tr><td colSpan={6} style={{textAlign: 'center', padding: '24px', color: '#777'}}>No active orders available right now.</td></tr>
+                                    ) : soldItems.map((item: any) => {
+                                        const isShipped = shippedOrders.includes(item.id);
+                                        return (
+                                        <tr key={item.id}>
+                                            <td style={{fontFamily: 'monospace'}}>#ORD-{7850 + item.id}</td>
+                                            <td>
+                                                <strong>Store Customer</strong><br />
+                                                <span style={{fontSize: '0.8rem', color: '#777'}}>Verified Purchase</span>
+                                            </td>
+                                            <td>
+                                                <strong>{item.name}</strong><br/>
+                                                <span style={{fontSize: '0.75rem', padding: '2px 8px', borderRadius: '12px', background: '#e8f5e9', color: '#2e7d32', fontWeight: 600, display: 'inline-block', marginTop: '4px'}}>Purchase</span>
+                                            </td>
+                                            <td><strong>${parseFloat(item.price || 0).toFixed(2)}</strong></td>
+                                            <td>
+                                                {isShipped ? (
+                                                    <span className="status-badge" style={{background: '#e8f5e9', color: '#2e7d32'}}>Shipped</span>
+                                                ) : (
+                                                    <span className="status-badge" style={{background: '#fff3e0', color: '#ef6c00'}}>Pending Shipment</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <button type="button" className={isShipped ? "btn-outline" : "btn-emerald"} style={{padding: '4px 12px', fontSize: '0.8rem', minWidth: '110px'}} onClick={() => {
+                                                    if (isShipped) setShippedOrders(shippedOrders.filter(id => id !== item.id));
+                                                    else setShippedOrders([...shippedOrders, item.id]);
+                                                }}>
+                                                    {isShipped ? 'Undo' : 'Mark Shipped'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
