@@ -26,7 +26,7 @@ const getImageForItem = (id: any, name: string, category: string, section: strin
   
   if (n.includes('denim') || n.includes('jacket') || n.includes('coat') || n.includes('corduroy')) {
     if (section === 'womens') {
-       return pick(['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80', 'https://images.unsplash.com/photo-1534030612642-1a4b8df2fbb9?w=800&q=80']);
+       return pick(['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&q=80', 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80']);
     }
     return pick(['https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=800&q=80', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&q=80']);
   }
